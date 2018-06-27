@@ -7,11 +7,51 @@ const youWonDiv = document.getElementById("youWonDiv")
 const delta = 33;
 
 // Coordinates of the player's avatar.
-let avatarRow; 
+let avatarRow;
 let avatarCol;
 
 // Separate array for keeping track of the moving crates.
 const crates = [];
+for (let row = 0; row < map.length; row++) {
+    const rowStr = map[row];
+    const rowDiv = document.createElement("div");
+    const crateRow = []
+
+    rowDiv.className = "row";
+
+    for (let i = 0; i < rowStr.length; i++) {
+        let cellClass = rowStr[i];
+        const cellDiv = document.createElement("div");
+        var newCrate = " "
+        cellDiv.className = "cell " + cellClass;
+        if (cellClass === "B") {
+            newCrate = crate(row, i)
+        }
+
+
+
+        if (cellClass === "S") {
+            avatarCol = i;
+            avatarRow = row;
+        }
+        if (cellClass === "X") {
+            cellDiv.className = "cell " + "O";
+            newCrate = crate(row, i)
+        }
+
+        if (cellClass === "S" || cellClass === "F") {
+            cellDiv.innerHTML = cellClass;
+        }
+        crateRow.push(newCrate)
+
+        rowDiv.appendChild(cellDiv);
+    }
+    crates.push(crateRow)
+
+    mazeDiv.appendChild(rowDiv);
+}
+
+
 
 // START HERE -----------------------------------------------------------------/
 // While the maze project only kept track of (W)alls, the player's
@@ -78,21 +118,27 @@ function move(dRow, dCol) {
     // However, it does not properly account for when there is another crate
     // or a wall next to the crate that the player wants to move. Your task is
     // to add logic to account for those two possibilities.
-    if(crate) {
+    if (crate != " ") {
         // Calculate the coordinates we would need to push the crate.
         const crateDestRow = destRow + dRow;
         const crateDestCol = destCol + dCol;
+        if(map[crateDestRow][crateDestCol]==="W"){
+            return
+        }
+        if(crates[crateDestRow][crateDestCol]!=" "){
+            return
+        }
 
         // Push the crate.
         crates[crateDestRow][crateDestCol] = crate;
-        crates[destRow][destCol] = null;
+        crates[destRow][destCol] = " "
         crate.style.top = crateDestRow * delta + "px";
         crate.style.left = crateDestCol * delta + "px";
 
     }
 
     // If there's no wall in the way, move the player's avatar.
-    if(destCell && destCell !== "W") {
+    if (destCell && destCell !== "W") {
         avatarRow += dRow;
         avatarCol += dCol;
         redrawAvatar();
@@ -102,10 +148,10 @@ function move(dRow, dCol) {
 }
 
 function checkForWin() {
-    for(let row = 0; row < map.length; row++) {
-        for(let col = 0; col < map[row].length; col++) {
+    for (let row = 0; row < map.length; row++) {
+        for (let col = 0; col < map[row].length; col++) {
             // Is there a crate that's not on a storage location?
-            if(crates[row][col] && (map[row][col] !== "O" && map[row][col] !== "X")) {
+            if (crates[row][col]!=" " && (map[row][col] !== "O" && map[row][col] !== "X")) {
                 return;
             }
         }
@@ -115,22 +161,22 @@ function checkForWin() {
 }
 
 document.addEventListener('keydown', (event) => {
-    switch(event.key) {
+    switch (event.key) {
         case "ArrowDown":
-            move(1,0);
+            move(1, 0);
             break;
         case "ArrowUp":
-            move(-1,0);
+            move(-1, 0);
             break;
         case "ArrowLeft":
-            move(0,-1);
+            move(0, -1);
             break;
         case "ArrowRight":
-            move(0,1);
+            move(0, 1);
             break;
         default:
             console.log('keydown event\n\nkey: ' + event.key);
     }
 });
 
-youWonDiv.addEventListener("click", () => location.reload());
+youWonDiv.addEventListener("click", () => { location.reload() });
