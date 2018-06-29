@@ -23,6 +23,7 @@ for (let row = 0; row < map.length; row++) {
         let cellClass = rowStr[i];
         const cellDiv = document.createElement("div");
         var newCrate = " "
+
         cellDiv.className = "cell " + cellClass;
         if (cellClass === "B") {
             newCrate = crate(row, i)
